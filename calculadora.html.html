@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#4C3D9E">
+<title>Calculadora MiShop</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+:root{
+  --purple:#4C3D9E;--purple-dk:#2e2570;--purple-lt:#EEECFE;
+  --green:#1D9E75;--green-lt:#E1F5EE;
+  --amber:#BA7517;--amber-lt:#FAEEDA;
+  --gray:#f6f5f2;--gray2:#eeede9;--border:#e2e1dc;
+  --text:#1a1a1a;--text2:#555;--text3:#999;--white:#fff;
+  --radius:14px;--radius-sm:9px;
+}
+body{font-family:'DM Sans',sans-serif;background:var(--gray);color:var(--text);min-height:100vh;max-width:420px;margin:0 auto;}
+
+.header{background:linear-gradient(135deg,var(--purple-dk),var(--purple));padding:48px 20px 24px;position:relative;overflow:hidden;}
+.header::after{content:'';position:absolute;top:-50px;right:-50px;width:180px;height:180px;border-radius:50%;background:rgba(255,255,255,0.06);}
+.header-title{font-size:22px;font-weight:700;color:#fff;margin-bottom:4px;position:relative;z-index:1;}
+.header-sub{font-size:13px;color:rgba(255,255,255,0.55);position:relative;z-index:1;}
+.mode-toggle{display:flex;background:rgba(255,255,255,0.12);border-radius:30px;padding:3px;margin-top:16px;position:relative;z-index:1;}
+.mode-btn{flex:1;padding:7px;border:none;background:none;color:rgba(255,255,255,0.6);font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;cursor:pointer;border-radius:25px;transition:all 0.2s;}
+.mode-btn.active{background:#fff;color:var(--purple);font-weight:600;}
+
+.content{padding:16px;padding-bottom:40px;}
+.card{background:var(--white);border-radius:var(--radius);border:1px solid var(--border);padding:16px;margin-bottom:12px;}
+.card-title{font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:0.6px;margin-bottom:12px;}
+
+.field{margin-bottom:12px;}
+.field:last-child{margin-bottom:0;}
+.field label{display:block;font-size:12px;font-weight:500;color:var(--text2);margin-bottom:5px;}
+.input-wrap{position:relative;}
+.input-prefix{position:absolute;left:12px;top:50%;transform:translateY(-50%);font-size:14px;font-weight:600;color:var(--text3);}
+.input-suffix{position:absolute;right:12px;top:50%;transform:translateY(-50%);font-size:13px;color:var(--text3);}
+.field input{width:100%;padding:11px 60px 11px 28px;border:1.5px solid var(--border);border-radius:var(--radius-sm);font-family:'DM Sans',sans-serif;font-size:16px;font-weight:500;color:var(--text);background:var(--white);outline:none;transition:border 0.15s;}
+.field input:focus{border-color:var(--purple);}
+
+.breakdown{background:var(--gray);border-radius:var(--radius-sm);padding:12px 14px;margin-bottom:12px;}
+.breakdown-row{display:flex;justify-content:space-between;align-items:center;padding:5px 0;font-size:13px;}
+.breakdown-row.total{border-top:1px solid var(--border);margin-top:6px;padding-top:10px;font-weight:700;font-size:14px;}
+.breakdown-label{color:var(--text2);}
+.breakdown-val{font-weight:500;color:var(--text);}
+.margin-badge{display:inline-block;background:var(--purple-lt);color:var(--purple);font-size:11px;font-weight:600;padding:2px 8px;border-radius:20px;margin-left:4px;}
+.cat-badge{display:inline-block;font-size:11px;font-weight:600;padding:2px 9px;border-radius:20px;margin-left:4px;}
+.cat-Económico{background:#DCFCE7;color:#166534;}
+.cat-Básico{background:#FEF9C3;color:#854D0E;}
+.cat-Intermedio{background:#FEF3C7;color:#92400E;}
+.cat-Medio-Alto{background:#FFEDD5;color:#9A3412;}
+.cat-Alto{background:#FEE2E2;color:#991B1B;}
+.cat-Premium{background:#EDE9FE;color:#5B21B6;}
+
+.profit-row{display:flex;gap:8px;margin-bottom:12px;}
+.profit-pill{flex:1;background:var(--green-lt);border-radius:var(--radius-sm);padding:10px 12px;text-align:center;}
+.profit-pill-label{font-size:10px;color:var(--green);font-weight:600;text-transform:uppercase;letter-spacing:0.4px;margin-bottom:2px;}
+.profit-pill-val{font-size:15px;font-weight:700;color:var(--green);}
+
+.price-output{border-radius:var(--radius);padding:14px 16px;margin-bottom:10px;position:relative;}
+.price-output.retail{background:var(--purple);}
+.price-output.b2b{background:var(--amber-lt);border:1.5px solid #F5DBA8;}
+.price-output-label{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.6px;margin-bottom:4px;}
+.price-output.retail .price-output-label{color:rgba(255,255,255,0.7);}
+.price-output.b2b .price-output-label{color:var(--amber);}
+.price-output-val{font-size:26px;font-weight:700;margin-bottom:2px;}
+.price-output.retail .price-output-val{color:#fff;}
+.price-output.b2b .price-output-val{color:var(--amber);}
+.price-output-sub{font-size:12px;}
+.price-output.retail .price-output-sub{color:rgba(255,255,255,0.6);}
+.price-output.b2b .price-output-sub{color:var(--text3);}
+.copy-btn{position:absolute;right:14px;top:50%;transform:translateY(-50%);background:rgba(255,255,255,0.2);border:none;border-radius:8px;padding:6px 10px;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:500;color:#fff;cursor:pointer;transition:all 0.15s;}
+.price-output.b2b .copy-btn{background:rgba(186,117,23,0.15);color:var(--amber);}
+.copy-btn.copied{background:var(--green);color:#fff;}
+
+.tiers-wrap{overflow-x:auto;border-radius:var(--radius-sm);border:1px solid var(--border);}
+.tiers{width:100%;border-collapse:collapse;font-size:12px;}
+.tiers th{background:var(--gray2);padding:8px 10px;text-align:left;font-weight:600;color:var(--text2);font-size:11px;white-space:nowrap;}
+.tiers td{padding:7px 10px;border-bottom:1px solid var(--border);white-space:nowrap;}
+.tiers tr:last-child td{border-bottom:none;}
+.tiers tr.active-tier td{background:var(--purple-lt);font-weight:700;color:var(--purple);}
+.tiers tr.active-tier td:first-child{border-left:3px solid var(--purple);}
+
+.b2b-hero{background:linear-gradient(135deg,#92400E,var(--amber));border-radius:var(--radius);padding:20px;margin-bottom:12px;text-align:center;}
+.b2b-hero-title{font-size:18px;font-weight:700;color:#fff;margin-bottom:4px;}
+.b2b-hero-sub{font-size:13px;color:rgba(255,255,255,0.75);}
+.b2b-badge{display:inline-block;background:rgba(255,255,255,0.2);color:#fff;font-size:12px;font-weight:600;padding:3px 12px;border-radius:20px;margin-top:8px;}
+.b2b-result{background:var(--amber-lt);border-radius:var(--radius);padding:20px;text-align:center;margin-bottom:12px;border:1.5px solid #F5DBA8;}
+.b2b-result-label{font-size:12px;font-weight:600;color:var(--amber);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;}
+.b2b-result-val{font-size:32px;font-weight:700;color:var(--amber);margin-bottom:4px;}
+.b2b-result-sub{font-size:13px;color:var(--text2);}
+.b2b-saving{display:inline-block;background:var(--green-lt);color:var(--green);font-size:13px;font-weight:600;padding:4px 14px;border-radius:20px;margin-top:8px;}
+.b2b-copy-big{width:100%;padding:13px;border:none;border-radius:var(--radius-sm);background:var(--amber);color:#fff;font-family:'DM Sans',sans-serif;font-size:15px;font-weight:600;cursor:pointer;margin-top:10px;}
+.tip-box{background:var(--amber-lt);border-radius:var(--radius-sm);border-left:3px solid var(--amber);padding:10px 12px;font-size:12px;color:var(--text2);line-height:1.6;margin-top:4px;}
+.tip-box strong{color:var(--amber);}
+.empty{text-align:center;padding:30px 20px;color:var(--text3);font-size:14px;}
+.toast{position:fixed;bottom:30px;left:50%;transform:translateX(-50%) translateY(20px);background:#1a1a1a;color:#fff;padding:10px 20px;border-radius:30px;font-size:13px;font-weight:500;opacity:0;transition:all 0.25s;pointer-events:none;z-index:999;white-space:nowrap;}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-title">💰 Calculadora MiShop</div>
+  <div class="header-sub">Personal Shopper · Nueva York → Colombia</div>
+  <div class="mode-toggle">
+    <button class="mode-btn active" onclick="setMode('vendedor')" id="btn-vendedor">🛍️ Mi calculadora</button>
+    <button class="mode-btn" onclick="setMode('b2b')" id="btn-b2b">🤝 Precio mayorista</button>
+  </div>
+</div>
+
+<!-- MODO VENDEDOR -->
+<div class="content" id="mode-vendedor">
+  <div class="card">
+    <div class="card-title">Datos del artículo</div>
+    <div class="field">
+      <label>Precio del artículo en USA</label>
+      <div class="input-wrap">
+        <span class="input-prefix">$</span>
+        <input type="number" id="v-precio" placeholder="0.00" step="0.01" min="0" oninput="calcular()">
+        <span class="input-suffix">USD</span>
+      </div>
+    </div>
+    <div class="field">
+      <label>TRM — Tasa de cambio</label>
+      <div class="input-wrap">
+        <span class="input-prefix">$</span>
+        <input type="number" id="v-trm" value="3900" oninput="calcular();saveTRM()">
+        <span class="input-suffix">COP/USD</span>
+      </div>
+    </div>
+  </div>
+
+  <div id="resultado" style="display:none;">
+    <div class="card">
+      <div class="card-title">Desglose del cálculo</div>
+      <div class="breakdown">
+        <div class="breakdown-row"><span class="breakdown-label">Precio artículo</span><span class="breakdown-val" id="d-precio-usd"></span></div>
+        <div class="breakdown-row"><span class="breakdown-label">+ Envío fijo</span><span class="breakdown-val">$3.00 USD</span></div>
+        <div class="breakdown-row"><span class="breakdown-label">= Subtotal USD</span><span class="breakdown-val" id="d-subtotal-usd"></span></div>
+        <div class="breakdown-row"><span class="breakdown-label">× TRM</span><span class="breakdown-val" id="d-trm-val"></span></div>
+        <div class="breakdown-row"><span class="breakdown-label">= Costo en COP</span><span class="breakdown-val" id="d-costo-cop"></span></div>
+        <div class="breakdown-row">
+          <span class="breakdown-label">Categoría <span class="cat-badge" id="d-cat"></span></span>
+          <span class="breakdown-val">Margen <span class="margin-badge" id="d-margen-pct"></span></span>
+        </div>
+        <div class="breakdown-row"><span class="breakdown-label">+ Tu ganancia</span><span class="breakdown-val" id="d-ganancia-cop"></span></div>
+        <div class="breakdown-row total"><span>Precio retail (redondeado)</span><span id="d-retail-final"></span></div>
+        <div class="breakdown-row" style="color:var(--amber);"><span class="breakdown-label">- Descuento B2B (35% ganancia)</span><span class="breakdown-val" id="d-b2b-dto" style="color:var(--green);">$0</span></div>
+        <div class="breakdown-row total" style="color:var(--amber);"><span>Precio B2B (redondeado)</span><span id="d-b2b-final"></span></div>
+      </div>
+    </div>
+
+    <div class="profit-row">
+      <div class="profit-pill"><div class="profit-pill-label">Ganancia retail</div><div class="profit-pill-val" id="p-retail"></div></div>
+      <div class="profit-pill"><div class="profit-pill-label">Ganancia B2B</div><div class="profit-pill-val" id="p-b2b"></div></div>
+    </div>
+
+    <div class="price-output retail">
+      <div class="price-output-label">Precio Público (Retail)</div>
+      <div class="price-output-val" id="out-retail"></div>
+      <div class="price-output-sub">Para clientas normales</div>
+      <button class="copy-btn" onclick="copiar('out-retail',this)">Copiar</button>
+    </div>
+
+    <div class="price-output b2b">
+      <div class="price-output-label">Precio Mayorista (B2B)</div>
+      <div class="price-output-val" id="out-b2b"></div>
+      <div class="price-output-sub">35% de tu ganancia como descuento B2B</div>
+      <button class="copy-btn" onclick="copiar('out-b2b',this)">Copiar</button>
+    </div>
+
+    <div class="tip-box">💡 <strong>Tip:</strong> Los precios ya están redondeados a múltiplos de $500 COP para que se vean más profesionales.</div>
+  </div>
+
+  <div id="empty-state" class="empty">Ingresa el precio en USD para ver los precios calculados 👆</div>
+
+</div>
+
+<!-- MODO B2B -->
+<div class="content" id="mode-b2b" style="display:none;">
+  <div class="b2b-hero">
+    <div class="b2b-hero-title">🤝 Portal Mayorista</div>
+    <div class="b2b-hero-sub">Ingresa el precio público del catálogo y obtén tu precio especial</div>
+    <div class="b2b-badge">Descuento sobre ganancia del vendedor</div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Precio público del artículo</div>
+    <div class="field">
+      <label>Precio retail (el que ves publicado en COP)</label>
+      <div class="input-wrap">
+        <span class="input-prefix">$</span>
+        <input type="number" id="b-retail" placeholder="0" oninput="calcB2B()">
+        <span class="input-suffix">COP</span>
+      </div>
+    </div>
+
+  </div>
+
+  <div id="b2b-resultado" style="display:none;">
+    <div class="b2b-result">
+      <div class="b2b-result-label">Tu precio mayorista</div>
+      <div class="b2b-result-val" id="b-precio-b2b">$0</div>
+      <div class="b2b-result-sub">Precio público: <strong id="b-precio-pub">$0</strong></div>
+      <div class="b2b-saving" id="b-ahorro">Ahorras $0</div>
+    </div>
+    <div class="card">
+      <div class="card-title">Detalle</div>
+      <div class="breakdown">
+        <div class="breakdown-row"><span class="breakdown-label">Precio público</span><span class="breakdown-val" id="bd-pub"></span></div>
+        <div class="breakdown-row"><span class="breakdown-label">Descuento B2B (35% ganancia)</span><span class="breakdown-val" style="color:var(--green);" id="bd-desc"></span></div>
+        <div class="breakdown-row total"><span>Tu precio final</span><span id="bd-final"></span></div>
+      </div>
+      <button class="b2b-copy-big" onclick="copiarB2B()">📋 Copiar mi precio mayorista</button>
+    </div>
+  </div>
+
+  <div id="b2b-empty" class="empty">Ingresa el precio del catálogo para ver tu precio mayorista 👆</div>
+
+  <div class="card" style="background:var(--amber-lt);border-color:#F5DBA8;">
+    <div class="card-title" style="color:var(--amber);">¿Cómo usar este portal?</div>
+    <div style="font-size:13px;color:var(--text2);line-height:1.7;">
+      1️⃣ Mira el precio publicado en el catálogo<br>
+      2️⃣ Ingrésalo aquí en pesos colombianos<br>
+      3️⃣ Obtén tu precio especial B2B<br>
+      4️⃣ Copia el precio y úsalo al hacer tu pedido<br><br>
+      <strong>⚠️ Pedido mínimo 5 unidades</strong> para precio mayorista.
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+var TIERS = [
+  {min:0,     max:8,      m:0.90, cat:"Económico"},
+  {min:8.01,  max:10,     m:0.80, cat:"Económico"},
+  {min:10.01, max:15,     m:0.65, cat:"Económico"},
+  {min:15.01, max:20,     m:0.70, cat:"Básico"},
+  {min:20.01, max:25,     m:0.68, cat:"Básico"},
+  {min:25.01, max:30,     m:0.66, cat:"Intermedio"},
+  {min:30.01, max:50,     m:0.60, cat:"Intermedio"},
+  {min:50.01, max:60,     m:0.55, cat:"Medio-Alto"},
+  {min:60.01, max:75,     m:0.50, cat:"Medio-Alto"},
+  {min:75.01, max:90,     m:0.42, cat:"Alto"},
+  {min:90.01, max:120,    m:0.38, cat:"Alto"},
+  {min:120.01,max:135,    m:0.35, cat:"Premium"},
+  {min:135.01,max:150,    m:0.33, cat:"Premium"},
+  {min:150.01,max:999999, m:0.30, cat:"Premium"},
+];
+
+try{ var t=localStorage.getItem('mishop_trm'); if(t) document.getElementById('v-trm').value=t; }catch(e){}
+
+function saveTRM(){ try{ localStorage.setItem('mishop_trm',document.getElementById('v-trm').value); }catch(e){} }
+
+function setMode(m){
+  document.getElementById('mode-vendedor').style.display=m==='vendedor'?'block':'none';
+  document.getElementById('mode-b2b').style.display=m==='b2b'?'block':'none';
+  document.getElementById('btn-vendedor').classList.toggle('active',m==='vendedor');
+  document.getElementById('btn-b2b').classList.toggle('active',m==='b2b');
+}
+
+function getTier(p){ for(var i=0;i<TIERS.length;i++) if(p>=TIERS[i].min&&p<=TIERS[i].max) return TIERS[i]; return TIERS[TIERS.length-1]; }
+function fmt(n){ return '$'+Math.round(n).toLocaleString('es-CO'); }
+function r500(n){ return Math.round(n/500)*500; }
+
+function calcular(){
+  var precio=parseFloat(document.getElementById('v-precio').value)||0;
+  var trm=parseFloat(document.getElementById('v-trm').value)||3900;
+  if(precio<=0){ document.getElementById('resultado').style.display='none'; document.getElementById('empty-state').style.display='block'; return; }
+  document.getElementById('resultado').style.display='block';
+  document.getElementById('empty-state').style.display='none';
+  var tier=getTier(precio);
+  var sub=precio+3;
+  var costo=sub*trm;
+  var ganBruta=costo*tier.m;
+  var retail=r500(costo+ganBruta);
+  var descB2B=r500(ganBruta*0.35);  // 35% de la ganancia
+  var b2b=r500(retail-descB2B);
+  document.getElementById('d-precio-usd').textContent='$'+precio.toFixed(2)+' USD';
+  document.getElementById('d-subtotal-usd').textContent='$'+sub.toFixed(2)+' USD';
+  document.getElementById('d-trm-val').textContent='$'+trm.toLocaleString('es-CO');
+  document.getElementById('d-costo-cop').textContent=fmt(costo);
+  var cb=document.getElementById('d-cat'); cb.textContent=tier.cat; cb.className='cat-badge cat-'+tier.cat;
+  document.getElementById('d-margen-pct').textContent=Math.round(tier.m*100)+'%';
+  document.getElementById('d-ganancia-cop').textContent=fmt(ganBruta);
+  document.getElementById('d-retail-final').textContent=fmt(retail);
+  document.getElementById('out-retail').textContent=fmt(retail);
+  document.getElementById('out-b2b').textContent=fmt(b2b);
+  document.getElementById('d-b2b-final').textContent=fmt(b2b);
+  document.getElementById('p-retail').textContent=fmt(retail-costo);
+  document.getElementById('p-b2b').textContent=fmt(b2b-costo);
+  document.getElementById('d-b2b-dto').textContent='- '+fmt(descB2B);
+}
+
+// Retail COP -> margen lookup (TRM=3900, same as main calc)
+var RETAIL_LOOKUP = [
+  {min:0,      max:81500,  m:0.90},
+  {min:81501,  max:91500,  m:0.80},
+  {min:91501,  max:119500, m:0.65},
+  {min:119501, max:152500, m:0.70},
+  {min:152501, max:183500, m:0.68},
+  {min:183501, max:213500, m:0.66},
+  {min:213501, max:330500, m:0.60},
+  {min:330501, max:381000, m:0.55},
+  {min:381001, max:456500, m:0.50},
+  {min:456501, max:515000, m:0.42},
+  {min:515001, max:662000, m:0.38},
+  {min:662001, max:726500, m:0.35},
+  {min:726501, max:793500, m:0.33},
+  {min:793501, max:999999999, m:0.30}
+];
+
+function getMargenFromRetail(retail){
+  for(var i=0;i<RETAIL_LOOKUP.length;i++){
+    if(retail>=RETAIL_LOOKUP[i].min && retail<=RETAIL_LOOKUP[i].max) return RETAIL_LOOKUP[i].m;
+  }
+  return 0.30;
+}
+
+function calcB2B(){
+  var retail = parseFloat(document.getElementById('b-retail').value)||0;
+  if(retail<=0){
+    document.getElementById('b2b-resultado').style.display='none';
+    document.getElementById('b2b-empty').style.display='block';
+    return;
+  }
+  document.getElementById('b2b-resultado').style.display='block';
+  document.getElementById('b2b-empty').style.display='none';
+  // Auto-detect margen from retail COP price range
+  var margen = getMargenFromRetail(retail);
+  // Reverse-engineer ganancia: retail = costo*(1+margen) -> ganancia = retail*margen/(1+margen)
+  var ganancia = retail * margen / (1 + margen);
+  var desc = r500(ganancia * 0.35);
+  var b2b = r500(retail - desc);
+  document.getElementById('b-precio-b2b').textContent=fmt(b2b);
+  document.getElementById('b-precio-pub').textContent=fmt(retail);
+  document.getElementById('b-ahorro').textContent='Ahorras '+fmt(desc);
+  document.getElementById('bd-pub').textContent=fmt(retail);
+  document.getElementById('bd-desc').textContent='- '+fmt(desc);
+  document.getElementById('bd-final').textContent=fmt(b2b);
+}
+
+function copiar(id,btn){
+  var v=document.getElementById(id).textContent;
+  navigator.clipboard.writeText(v).then(function(){ var o=btn.textContent; btn.textContent='✓ Copiado'; btn.classList.add('copied'); setTimeout(function(){ btn.textContent=o; btn.classList.remove('copied'); },2000); }).catch(function(){ showToast(v); });
+}
+function copiarB2B(){
+  var v=document.getElementById('b-precio-b2b').textContent;
+  navigator.clipboard.writeText(v).then(function(){ showToast('✓ Precio mayorista copiado'); }).catch(function(){ showToast(v); });
+}
+function showToast(m){ var t=document.getElementById('toast'); t.textContent=m; t.classList.add('show'); setTimeout(function(){ t.classList.remove('show'); },2200); }
+</script>
+</body>
+</html>
